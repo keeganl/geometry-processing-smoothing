@@ -1,5 +1,6 @@
 #include "smooth.h"
 #include <igl/edge_lengths.h>
+#include <cotmatrix.h>
 #include <iostream>
 
 void smooth(
@@ -11,6 +12,7 @@ void smooth(
 {
   // Replace with your code
   // call to generate the cotangenent Laplacian
+
   Eigen::SparseMatrix<double>
       cotLaplacian;
 
@@ -18,9 +20,7 @@ void smooth(
   Eigen::MatrixXd edgeLengths;
   igl::edge_lengths(V, F, edgeLengths);
 
-  std::cout << "edge lengths: \n"
-            << edgeLengths << "\nedge lengths done\n";
-  // Heron's Law of sines https://en.wikipedia.org/wiki/Heron's_formula
+  cotmatrix(edgeLengths, F, cotLaplacian);
 
   U = G;
 }
