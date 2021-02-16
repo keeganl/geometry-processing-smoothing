@@ -2,6 +2,7 @@
 #include "helperMathFunctions.h"
 #include "helperClasses.h"
 #include <igl/adjacency_list.h>
+#include <igl/cotmatrix.h>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -18,27 +19,20 @@ void cotmatrix(
   // Output
   // L is sparse, symmetric matrix
 
-  Eigen::SparseMatrix<double> laplacian(F.rows(), F.cols());
-
   // containing at row i the adjacent vertices of vertex i
   std::vector<std::vector<int> > adjList;
   igl::adjacency_list(F, adjList, true);
+
+  Eigen::SparseMatrix<double> laplacian(adjList.size(), adjList.size());
 
   for (int i = 0; i < adjList.size(); i++)
   {
     // i is the vertex
     for (int j = 0; j < adjList[i].size(); j++)
     {
-      laplacian.coeffRef(i, j) += cot(l.row(i)[0], l.row(i)[1], l.row(i)[2]);
-      laplacian.coeffRef(j, i) += cot(l.row(i)[0], l.row(i)[1], l.row(i)[2]);
+      laplacian.coeffRef(i, j) += cot(l.row(j)[0], l.row(i)[1], l.row(i)[2]);
       laplacian.coeffRef(i, i) -= cot(l.row(i)[0], l.row(i)[1], l.row(i)[2]);
-      laplacian.coeffRef(j, j) -= cot(l.row(i)[0], l.row(i)[1], l.row(i)[2]);
     }
   }
-
-  std::ofstream MyFile("test.txt");
-  MyFile << laplacian;
-  MyFile.close();
-
   L = laplacian;
 }
